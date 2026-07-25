@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SNA SPARSH Dashboard & PDF Generator</title>
+  
+  <!-- html2pdf Library for Direct PDF Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; padding: 20px; background-color: #e2e8f0; color: #1a202c; }
+    .container { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; }
+    
+    .dashboard-panel {
+      flex: 1; background: #ffffff; padding: 25px; border-radius: 10px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); max-height: 90vh; overflow-y: auto;
+    }
+    .dashboard-panel h2 { margin-top: 0; color: #1e3a8a; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; font-size: 1.3rem; }
+    .form-group { margin-bottom: 10px; }
+    .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; color: #374151; }
+    .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; text-transform: uppercase; }
+    
+    /* BUTTON STYLES */
+    .btn-actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .btn-row { display: flex; gap: 10px; }
+    .btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; text-align: center; transition: background 0.2s; color: white; }
+    .btn-print { background-color: #2563eb; }
+    .btn-print:hover { background-color: #1d4ed8; }
+    .btn-pdf { background-color: #16a34a; }
+    .btn-pdf:hover { background-color: #15803d; }
+    .btn-reset { background-color: #dc2626; }
+    .btn-reset:hover { background-color: #b91c1c; }
+
+    .preview-panel { flex: 1.2; background: #718096; padding: 20px; border-radius: 10px; display: flex; justify-content: center; }
+    .page { background: white; width: 210mm; min-height: 297mm; padding: 20mm; box-sizing: border-box; position: relative; }
+    
+    .doc-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 20px; }
+    .doc-header h3 { margin: 0; font-size: 14pt; font-weight: 600; text-transform: uppercase; }
+    .doc-header h2 { margin: 6px 0 4px 0; font-size: 16pt; font-weight: bold; text-transform: uppercase; }
+    .doc-header p { margin: 0; font-size: 10pt; font-weight: bold; }
+
+    .doc-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    .doc-table td { padding: 8px 6px; vertical-align: bottom; font-size: 10pt; }
+    .doc-table td.num { width: 4%; font-weight: bold; }
+    .doc-table td.label-col { width: 44%; font-weight: bold; white-space: nowrap; }
+    .doc-table td.val-col { border-bottom: 1.5px dotted #000; font-weight: 600; color: #000; text-transform: uppercase; padding-left: 10px; }
+
+    .doc-footer { margin-top: 50px; display: flex; justify-content: space-between; font-weight: bold; font-size: 10pt; }
+
+    @media print {
+      body { background: none; padding: 0; }
+      .dashboard-panel, .btn-actions { display: none !important; }
+      .preview-panel { background: none; padding: 0; }
+      .page { box-shadow: none; width: 100%; padding: 10mm 15mm; }
+      @page { size: A4 portrait; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  
+  <!-- DASHBOARD INPUTS -->
+  <div class="dashboard-panel">
+    <h2>Dashboard Entry</h2>
+    
+    <div class="form-group"><label>1. School Name</label><input type="text" id="in_school" value="TALDANGRA FULMATI HIGH SCHOOL (H.S.)" oninput="updateForm()"></div>
+    <div class="form-group"><label>2. Candidate Name</label><input type="text" id="in_name" value="PRABIR KUMAR DANGAR" oninput="updateForm()"></div>
+    <div class="form-group">
+      <label>3. Designation</label>
+      <select id="in_designation" onchange="updateForm()">
+        <option value="PRY">PRY TEACHER</option>
+        <option value="UP">UP TEACHER</option>
+        <option value="ALCHIKI PARA TEACHER" selected>ALCHIKI PARA TEACHER</option>
+      </select>
+    </div>
+    <div class="form-group"><label>4. Email ID</label><input type="text" id="in_email" value="PRABIR.DANGAR@GMAIL.COM" oninput="updateForm()"></div>
+    <div class="form-group"><label>5. PAN No.</label><input type="text" id="in_pan" value="ABCDE1234F" oninput="updateForm()"></div>
+    <div class="form-group"><label>6. Aadhaar No.</label><input type="text" id="in_aadhaar" value="1234 5678 9012" oninput="updateForm()"></div>
+    <div class="form-group"><label>7. Voter ID No.</label><input type="text" id="in_voter" value="WB/01/123/456789" oninput="updateForm()"></div>
+    <div class="form-group"><label>8. Address</label><input type="text" id="in_address" value="VILL + P.O. - TALDANGRA, DIST - BANKURA" oninput="updateForm()"></div>
+    <div class="form-group"><label>9. Pin Code</label><input type="text" id="in_pin" value="722152" oninput="updateForm()"></div>
+    <div class="form-group"><label>10. Mobile No.</label><input type="text" id="in_mobile" value="9876543210" oninput="updateForm()"></div>
+    <div class="form-group"><label>11. Date of Birth</label><input type="text" id="in_dob" value="15/08/1985" oninput="updateForm()"></div>
+    <div class="form-group"><label>12. Date of Joining</label><input type="text" id="in_doj" value="02/01/2010" oninput="updateForm()"></div>
+    <div class="form-group"><label>13. UAN No. (EPF)</label><input type="text" id="in_uan" value="100123456789" oninput="updateForm()"></div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="btn-actions">
+      <div class="btn-row">
+        <button class="btn btn-print" onclick="window.print()">🖨️ Print Document</button>
+        <button class="btn btn-pdf" onclick="downloadPDF()">📥 Download PDF</button>
+      </div>
+      <button class="btn btn-reset" onclick="resetForm()">Clear Form</button>
+    </div>
+  </div>
+
+  <!-- PRINT PREVIEW -->
+  <div class="preview-panel">
+    <div class="page" id="printablePage">
+      <div class="doc-header">
+        <h3>School Education Department, Government of West Bengal</h3>
+        <h2>SNA SPARSH INFORMATION FORM</h2>
+        <p>[ FILL UP CAPITAL ] [ ALL FILL UP ]</p>
+      </div>
+
+      <table class="doc-table">
+        <tr><td class="num">1.</td><td class="label-col">SCHOOL NAME :</td><td class="val-col" id="out_school"></td></tr>
+        <tr><td class="num">2.</td><td class="label-col">NAME :</td><td class="val-col" id="out_name"></td></tr>
+        <tr><td class="num">3.</td><td class="label-col">DESIGNATION :</td><td class="val-col" id="out_designation"></td></tr>
+        <tr><td class="num">4.</td><td class="label-col">EMAIL ID :</td><td class="val-col" id="out_email"></td></tr>
+        <tr><td class="num">5.</td><td class="label-col">PAN NO :</td><td class="val-col" id="out_pan"></td></tr>
+        <tr><td class="num">6.</td><td class="label-col">AADHAR NO :</td><td class="val-col" id="out_aadhaar"></td></tr>
+        <tr><td class="num">7.</td><td class="label-col">VOTER ID NO :</td><td class="val-col" id="out_voter"></td></tr>
+        <tr><td class="num">8.</td><td class="label-col">ADDRESS :</td><td class="val-col" id="out_address"></td></tr>
+        <tr><td class="num">9.</td><td class="label-col">PIN NO :</td><td class="val-col" id="out_pin"></td></tr>
+        <tr><td class="num">10.</td><td class="label-col">MOBILE NO (EPF/AADHAR ATTACH) :</td><td class="val-col" id="out_mobile"></td></tr>
+        <tr><td class="num">11.</td><td class="label-col">DATE OF BIRTH :</td><td class="val-col" id="out_dob"></td></tr>
+        <tr><td class="num">12.</td><td class="label-col">DATE OF JOINING :</td><td class="val-col" id="out_doj"></td></tr>
+        <tr><td class="num">13.</td><td class="label-col">UAN NO (EPF) :</td><td class="val-col" id="out_uan"></td></tr>
+      </table>
+
+      <div class="doc-footer">
+        <div>Date: ........................</div>
+        <div>Signature of Candidate: .......................................</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function updateForm() {
+    document.getElementById('out_school').innerText = document.getElementById('in_school').value.toUpperCase();
+    document.getElementById('out_name').innerText = document.getElementById('in_name').value.toUpperCase();
+    document.getElementById('out_designation').innerText = document.getElementById('in_designation').value.toUpperCase();
+    document.getElementById('out_email').innerText = document.getElementById('in_email').value.toUpperCase();
+    document.getElementById('out_pan').innerText = document.getElementById('in_pan').value.toUpperCase();
+    document.getElementById('out_aadhaar').innerText = document.getElementById('in_aadhaar').value.toUpperCase();
+    document.getElementById('out_voter').innerText = document.getElementById('in_voter').value.toUpperCase();
+    document.getElementById('out_address').innerText = document.getElementById('in_address').value.toUpperCase();
+    document.getElementById('out_pin').innerText = document.getElementById('in_pin').value.toUpperCase();
+    document.getElementById('out_mobile').innerText = document.getElementById('in_mobile').value.toUpperCase();
+    document.getElementById('out_dob').innerText = document.getElementById('in_dob').value.toUpperCase();
+    document.getElementById('out_doj').innerText = document.getElementById('in_doj').value.toUpperCase();
+    document.getElementById('out_uan').innerText = document.getElementById('in_uan').value.toUpperCase();
+  }
+
+  function resetForm() {
+    const inputs = document.querySelectorAll('.dashboard-panel input');
+    inputs.forEach(input => input.value = '');
+    updateForm();
+  }
+
+  function downloadPDF() {
+    const element = document.getElementById('printablePage');
+    const opt = {
+      margin:       10,
+      filename:     'SNA_SPARSH_Information_Form.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  }
+
+  updateForm();
+</script>
+
+</body>
+</html>
