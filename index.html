@@ -18,6 +18,7 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); max-height: 90vh; overflow-y: auto;
     }
     .dashboard-panel h2 { margin-top: 0; color: #1e3a8a; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; font-size: 1.3rem; }
+    .dashboard-panel h3 { color: #1e3a8a; border-bottom: 1px dashed #cbd5e1; padding-bottom: 5px; margin-top: 20px; font-size: 1.05rem; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; color: #374151; }
     .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; text-transform: uppercase; }
@@ -42,12 +43,13 @@
     .doc-header p { margin: 0; font-size: 10pt; font-weight: bold; }
 
     .doc-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    .doc-table td { padding: 8px 6px; vertical-align: bottom; font-size: 10pt; }
+    .doc-table td { padding: 6px 6px; vertical-align: bottom; font-size: 10pt; }
     .doc-table td.num { width: 4%; font-weight: bold; }
     .doc-table td.label-col { width: 44%; font-weight: bold; white-space: nowrap; }
     .doc-table td.val-col { border-bottom: 1.5px dotted #000; font-weight: 600; color: #000; text-transform: uppercase; padding-left: 10px; }
+    .doc-table tr.section-header td { font-weight: bold; border-bottom: none; padding-top: 12px; padding-bottom: 4px; color: #1e3a8a; text-decoration: underline; }
 
-    .doc-footer { margin-top: 50px; display: flex; justify-content: space-between; font-weight: bold; font-size: 10pt; }
+    .doc-footer { margin-top: 40px; display: flex; justify-content: space-between; font-weight: bold; font-size: 10pt; }
 
     /* MOBILE RESPONSIVE ADAPTATIONS */
     @media (max-width: 900px) {
@@ -109,6 +111,12 @@
     <div class="form-group"><label>12. Date of Joining</label><input type="text" id="in_doj" value="02/01/2010" oninput="updateForm()"></div>
     <div class="form-group"><label>13. UAN No. (EPF)</label><input type="text" id="in_uan" value="100123456789" oninput="updateForm()"></div>
 
+    <!-- SALARY A/C DETAILS INPUTS -->
+    <h3>Salary A/C Details</h3>
+    <div class="form-group"><label>14. Bank A/C No.</label><input type="text" id="in_bank_ac" value="12345678901" oninput="updateForm()"></div>
+    <div class="form-group"><label>15. Bank IFSC Code</label><input type="text" id="in_bank_ifsc" value="SBIN0001234" oninput="updateForm()"></div>
+    <div class="form-group"><label>16. Bank Name</label><input type="text" id="in_bank_name" value="STATE BANK OF INDIA" oninput="updateForm()"></div>
+
     <!-- ACTION BUTTONS -->
     <div class="btn-actions">
       <div class="btn-row">
@@ -142,6 +150,12 @@
         <tr><td class="num">11.</td><td class="label-col">DATE OF BIRTH :</td><td class="val-col" id="out_dob"></td></tr>
         <tr><td class="num">12.</td><td class="label-col">DATE OF JOINING :</td><td class="val-col" id="out_doj"></td></tr>
         <tr><td class="num">13.</td><td class="label-col">UAN NO (EPF) :</td><td class="val-col" id="out_uan"></td></tr>
+        
+        <!-- SALARY A/C DETAILS IN TABLE -->
+        <tr class="section-header"><td colspan="3">SALARY A/C DETAILS :</td></tr>
+        <tr><td class="num">14.</td><td class="label-col">BANK A/C NO :</td><td class="val-col" id="out_bank_ac"></td></tr>
+        <tr><td class="num">15.</td><td class="label-col">BANK IFSC CODE :</td><td class="val-col" id="out_bank_ifsc"></td></tr>
+        <tr><td class="num">16.</td><td class="label-col">BANK NAME :</td><td class="val-col" id="out_bank_name"></td></tr>
       </table>
 
       <div class="doc-footer">
@@ -185,6 +199,11 @@
     document.getElementById('out_dob').innerText = document.getElementById('in_dob').value.toUpperCase();
     document.getElementById('out_doj').innerText = document.getElementById('in_doj').value.toUpperCase();
     document.getElementById('out_uan').innerText = document.getElementById('in_uan').value.toUpperCase();
+
+    // Bank Details
+    document.getElementById('out_bank_ac').innerText = document.getElementById('in_bank_ac').value.toUpperCase();
+    document.getElementById('out_bank_ifsc').innerText = document.getElementById('in_bank_ifsc').value.toUpperCase();
+    document.getElementById('out_bank_name').innerText = document.getElementById('in_bank_name').value.toUpperCase();
   }
 
   function resetForm() {
