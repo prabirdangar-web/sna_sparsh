@@ -77,15 +77,27 @@
     <h2>Dashboard Entry</h2>
     
     <div class="form-group"><label>1. School Name</label><input type="text" id="in_school" value="TALDANGRA FULMATI HIGH SCHOOL (H.S.)" oninput="updateForm()"></div>
-    <div class="form-group"><label>2. Candidate Name</label><input type="text" id="in_name" value="YOUR NAME" oninput="updateForm()"></div>
+    <div class="form-group"><label>2. Candidate Name</label><input type="text" id="in_name" value="WRITE YOUR NAME" oninput="updateForm()"></div>
+    
     <div class="form-group">
       <label>3. Designation</label>
-      <select id="in_designation" onchange="updateForm()">
-        <option value="PRY">PRY TEACHER</option>
-        <option value="UP">UP TEACHER</option>
-        <option value="ALCHIKI PARA TEACHER" selected>ALCHIKI PARA TEACHER</option>
+      <select id="in_designation" onchange="toggleDesignationManual(); updateForm();">
+        <option value="PARA TEACHER PRIMARY">PARA TEACHER PRIMARY</option>
+        <option value="PARA TEACHER UPPER PRIMARY">PARA TEACHER UPPER PRIMARY</option>
+        <option value="PARA TEACHER UPPER PRIMARY [SANTALI MEDIUM]" selected>PARA TEACHER UPPER PRIMARY [SANTALI MEDIUM]</option>
+        <option value="ALCHIKI PARA TEACHER">ALCHIKI PARA TEACHER</option>
+        <option value="PRY TEACHER">PRY TEACHER</option>
+        <option value="UP TEACHER">UP TEACHER</option>
+        <option value="OTHER">OTHER (TYPE MANUALLY)</option>
       </select>
     </div>
+
+    <!-- OPTIONAL MANUAL DESIGNATION FIELD -->
+    <div class="form-group" id="manual_desig_group" style="display: none;">
+      <label>3a. Manual Designation Entry</label>
+      <input type="text" id="in_designation_manual" placeholder="TYPE CUSTOM DESIGNATION HERE" oninput="updateForm()">
+    </div>
+
     <div class="form-group"><label>4. Email ID</label><input type="text" id="in_email" value="example@gmail.com" oninput="updateForm()"></div>
     <div class="form-group"><label>5. PAN No.</label><input type="text" id="in_pan" value="ABCDE1234F" oninput="updateForm()"></div>
     <div class="form-group"><label>6. Aadhaar No.</label><input type="text" id="in_aadhaar" value="XXXX XXXX XXXX" oninput="updateForm()"></div>
@@ -142,10 +154,27 @@
 </div>
 
 <script>
+  function toggleDesignationManual() {
+    const selectVal = document.getElementById('in_designation').value;
+    const manualGroup = document.getElementById('manual_desig_group');
+    if (selectVal === 'OTHER') {
+      manualGroup.style.display = 'block';
+    } else {
+      manualGroup.style.display = 'none';
+    }
+  }
+
   function updateForm() {
     document.getElementById('out_school').innerText = document.getElementById('in_school').value.toUpperCase();
     document.getElementById('out_name').innerText = document.getElementById('in_name').value.toUpperCase();
-    document.getElementById('out_designation').innerText = document.getElementById('in_designation').value.toUpperCase();
+    
+    // Designation logic (Select or Manual text)
+    const selectVal = document.getElementById('in_designation').value;
+    const finalDesig = (selectVal === 'OTHER') 
+      ? document.getElementById('in_designation_manual').value 
+      : selectVal;
+    document.getElementById('out_designation').innerText = finalDesig.toUpperCase();
+
     document.getElementById('out_email').innerText = document.getElementById('in_email').value.toUpperCase();
     document.getElementById('out_pan').innerText = document.getElementById('in_pan').value.toUpperCase();
     document.getElementById('out_aadhaar').innerText = document.getElementById('in_aadhaar').value.toUpperCase();
@@ -161,6 +190,8 @@
   function resetForm() {
     const inputs = document.querySelectorAll('.dashboard-panel input');
     inputs.forEach(input => input.value = '');
+    document.getElementById('in_designation').selectedIndex = 0;
+    toggleDesignationManual();
     updateForm();
   }
 
